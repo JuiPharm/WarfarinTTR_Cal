@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Warfarin maintenance-dose clinical decision support prototype">
+  <title>Warfarin CDSS v2.2</title>
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/wizard.css">
+  <link rel="stylesheet" href="css/charts.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="shell header-grid">
+    <div>
+      <div class="eyebrow">Clinical Decision Support · Maintenance phase</div>
+      <h1>Warfarin CDSS <span class="version">v2.2</span></h1>
+      <p>Risk stratification, INR history, safety screening และการจัดตารางยาในหน้าเดียว</p>
+    </div>
+    <div class="privacy-chip">🔒 Client-side only · No network</div>
+  </div>
+</header>
+
+<main class="shell">
+  <noscript><div class="alert danger">ต้องเปิด JavaScript เพื่อใช้ระบบคำนวณ กรุณาใช้แบบฟอร์มมาตรฐานของหน่วยงานแทน</div></noscript>
+  <section class="alert warning sticky-disclaimer" role="note">
+    <strong>สำหรับบุคลากรทางการแพทย์:</strong> เครื่องมือนี้เป็นต้นแบบสนับสนุนการตัดสินใจ ไม่แทน clinical judgment และไม่ครอบคลุม initiation, bridging, reversal dosing, pregnancy หรือ peri-procedural management
+  </section>
+
+  <section class="toolbar card no-print">
+    <label>Clinician ID <input id="clinicianId" autocomplete="off" placeholder="ไม่บังคับ"></label>
+    <label>ผู้ป่วย
+      <select id="patientSelect" aria-label="เลือกผู้ป่วย"></select>
+    </label>
+    <button id="newPatientBtn" class="btn secondary" type="button">+ ผู้ป่วยใหม่</button>
+    <button id="resetPatientBtn" class="btn secondary" type="button">รีเซ็ตผู้ป่วยนี้</button>
+    <button id="clearDataBtn" class="btn ghost danger-text" type="button">ล้างข้อมูลทั้งหมด</button>
+  </section>
+
+  <nav class="stepper no-print" aria-label="ขั้นตอนการประเมิน">
+    <button class="step active" data-step="1"><span>1</span><b>Risk</b><small>ความเสี่ยง</small></button>
+    <button class="step" data-step="2"><span>2</span><b>INR</b><small>ประวัติและ TTR</small></button>
+    <button class="step" data-step="3"><span>3</span><b>Safety</b><small>Hard stops</small></button>
+    <button class="step" data-step="4"><span>4</span><b>Dose</b><small>ผลและตารางยา</small></button>
+  </nav>
+
+  <form id="appForm" novalidate>
+    <section class="wizard-panel active" data-panel="1">
+      <div class="section-head"><div><span class="kicker">STEP 1</span><h2>Risk stratification</h2></div><span id="step1Status" class="badge neutral">ยังไม่ครบ</span></div>
+      <div class="grid two">
+        <article class="card">
+          <h3>ข้อมูลผู้ป่วยและข้อบ่งใช้</h3>
+          <div class="form-grid two">
+            <label class="required">อายุ (ปี)<input id="age" type="number" min="18" max="120" step="1"></label>
+            <label>น้ำหนัก (kg)<input id="weight" type="number" min="25" max="300" step="0.1"></label>
+            <label>เพศ<select id="gender"><option value="">ไม่ระบุ</option><option value="male">ชาย</option><option value="female">หญิง</option></select></label>
+            <label class="required">ข้อบ่งใช้<select id="indication">
+              <option value="af">Atrial fibrillation</option><option value="af70">AF อายุ ≥70 ปี (optional lower range)</option>
+              <option value="rheumatic">AF + moderate/severe rheumatic MS</option><option value="mav">Mechanical AVR ไม่มี risk factor</option>
+              <option value="mavRisk">Mechanical AVR มี risk factor/older valve</option><option value="mmv">Mechanical MVR</option>
+              <option value="onx">On-X AVR ≥3 เดือน ไม่มี risk factor</option><option value="acs_ccs">AF + ACS/CCS (local protocol)</option>
+              <option value="custom">แพทย์กำหนด target</option>
+            </select></label>
+          </div>
+          <div id="customTargetBox" class="subcard hidden"><div class="form-grid two"><label>Target min<input id="targetMin" type="number" min="1" max="5" step="0.1"></label><label>Target max<input id="targetMax" type="number" min="1" max="5" step="0.1"></label></div></div>
+          <div id="targetSummary" class="alert info"></div>
+          <label id="af70ConfirmWrap" class="check hidden"><input id="af70Confirm" type="checkbox"><span>ยืนยันว่าแพทย์เลือก INR 1.5–3.0 สำหรับผู้ป่วยอายุ ≥70 ปี หลังประเมินประโยชน์และความเสี่ยง</span></label>
+          <div id="doacBanner" class="alert accent"></div>
+          <label id="warfarinAckWrap" class="check"><input id="warfarinAck" type="checkbox"><span>รับทราบข้อพิจารณา DOAC และเลือกดำเนิน workflow ของ warfarin ต่อ</span></label>
+        </article>
+
+        <article class="card">
+          <h3>CHA₂DS₂-VA <span class="help" title="ไม่รวม sex category ตามแผน Thai AF 2025">?</span></h3>
+          <div id="chaFields" class="check-grid">
+            <label class="check"><input data-cha="congestiveHF" type="checkbox"><span>Congestive heart failure/LV dysfunction</span></label>
+            <label class="check"><input data-cha="hypertension" type="checkbox"><span>Hypertension</span></label>
+            <label class="check"><input data-cha="diabetes" type="checkbox"><span>Diabetes mellitus</span></label>
+            <label class="check"><input data-cha="strokeTIA" type="checkbox"><span>Stroke/TIA/systemic embolism (2 คะแนน)</span></label>
+            <label class="check"><input data-cha="vascularDisease" type="checkbox"><span>Vascular disease</span></label>
+          </div>
+          <div class="score-card"><span>คะแนน</span><strong id="chaScore">0</strong><p id="chaRecommendation">กรอกอายุเพื่อประเมิน</p></div>
+          <p class="fine-print">ระบบแสดงระดับคำแนะนำตามคะแนน ไม่แสดงตัวเลข annual risk ที่ไม่ได้กำหนดไว้ในเอกสาร implementation plan อย่างตรวจสอบได้</p>
+        </article>
+
+        <article class="card full-span">
+          <h3>HAS-BLED และปัจจัยที่แก้ไขได้</h3>
+          <div id="hasFields" class="check-grid columns-3">
+            <label class="check"><input data-has="hypertension" type="checkbox"><span>Uncontrolled hypertension</span></label>
+            <label class="check"><input data-has="abnormalRenal" type="checkbox"><span>Abnormal renal function</span></label>
+            <label class="check"><input data-has="abnormalLiver" type="checkbox"><span>Abnormal liver function</span></label>
+            <label class="check"><input data-has="strokeHistory" type="checkbox"><span>Stroke history</span></label>
+            <label class="check"><input data-has="bleedingHistory" type="checkbox"><span>Bleeding history/predisposition</span></label>
+            <label class="check"><input data-has="labileINR" type="checkbox"><span>Labile INR/TTR ต่ำ</span></label>
+            <label class="check"><input data-has="drugs" type="checkbox"><span>Drugs increasing bleeding</span></label>
+            <label class="check"><input data-has="alcohol" type="checkbox"><span>Alcohol excess</span></label>
+          </div>
+          <div class="score-row"><div class="score-card compact"><span>HAS-BLED</span><strong id="hasScore">0</strong></div><div id="modifiableFactors" class="alert info grow">ยังไม่พบปัจจัยที่แก้ไขได้จากข้อมูลที่เลือก</div></div>
+          <p class="fine-print">คะแนนสูงใช้เพื่อเพิ่มความระมัดระวังและแก้ปัจจัยเสี่ยง ไม่ควรใช้เป็นเหตุผลเดียวในการงด anticoagulation</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wizard-panel" data-panel="2">
+      <div class="section-head"><div><span class="kicker">STEP 2</span><h2>INR history และ Time in Therapeutic Range</h2></div><span id="ttrBadge" class="badge neutral">ข้อมูลไม่พอ</span></div>
+      <div class="grid two">
+        <article class="card">
+          <h3>เพิ่มผล INR</h3>
+          <div class="form-grid two">
+            <label class="required">วันที่<input id="inrEntryDate" type="date"></label>
+            <label class="required">INR<input id="inrEntryValue" type="number" min="0.1" max="20" step="0.1"></label>
+            <label>Weekly dose ขณะตรวจ<input id="inrEntryDose" type="number" min="0.5" max="140" step="0.5"></label>
+            <label>หมายเหตุ<input id="inrEntryNotes" maxlength="120"></label>
+          </div>
+          <button id="addInrBtn" type="button" class="btn primary">เพิ่มผล INR</button>
+          <div id="inrError" class="field-error" role="alert"></div>
+          <div class="table-wrap"><table><thead><tr><th>วันที่</th><th>INR</th><th>Dose</th><th>สถานะ</th><th></th></tr></thead><tbody id="inrTableBody"></tbody></table></div>
+        </article>
+        <article class="card">
+          <div class="metric-grid">
+            <div class="metric"><span>TTR (Rosendaal)</span><strong id="ttrValue">—</strong><small id="ttrRange">ต้องมีอย่างน้อย 2 ค่า</small></div>
+            <div class="metric"><span>INR ล่าสุด</span><strong id="latestInr">—</strong><small id="latestInrDate">—</small></div>
+          </div>
+          <div id="ttrAlert" class="alert info">เพิ่มผล INR อย่างน้อย 2 ค่าเพื่อคำนวณ TTR</div>
+          <div id="inrChart" class="chart" role="img" aria-label="กราฟแนวโน้ม INR"></div>
+          <p class="fine-print">คำนวณด้วย linear interpolation ระหว่างค่าต่อเนื่องภายในข้อมูลที่บันทึก ไม่ extrapolate ก่อนค่าแรกหรือหลังค่าสุดท้าย</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wizard-panel" data-panel="3">
+      <div class="section-head"><div><span class="kicker">STEP 3</span><h2>Safety screening</h2></div><span id="safetyBadge" class="badge neutral">ยังไม่ประเมิน</span></div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Bleeding assessment</h3>
+          <label class="required">ระดับเลือดออก<select id="bleeding"><option value="none">ไม่มี</option><option value="minor">Minor bleeding</option><option value="crnmb">Clinically relevant non-major bleeding</option><option value="major">Major/life-threatening bleeding</option></select></label>
+          <div id="bleedingDefinition" class="alert info"></div>
+          <div class="check-grid">
+            <label class="check danger-check"><input id="pregnancy" type="checkbox"><span>ตั้งครรภ์หรืออาจตั้งครรภ์</span></label>
+            <label class="check danger-check"><input id="procedure" type="checkbox"><span>มีหัตถการ/ผ่าตัดที่กำลังวางแผน</span></label>
+            <label class="check"><input id="acuteIllness" type="checkbox"><span>Acute illness/ไข้/ท้องเสีย/กินได้น้อย</span></label>
+            <label class="check"><input id="dietAlcoholChange" type="checkbox"><span>Diet หรือ alcohol เปลี่ยนชัดเจน</span></label>
+          </div>
+          <label>ลืมยาใน 7 วันที่ผ่านมา<input id="missedDoses" type="number" min="0" max="7" value="0"></label>
+        </article>
+        <article class="card">
+          <h3>Drug interaction</h3>
+          <label>เลือกยาที่เพิ่งเริ่ม/หยุด<select id="interactionDrug"><option value="none">ไม่มี/ไม่ทราบ</option><option value="amiodarone">Amiodarone — INR ↑</option><option value="metronidazole">Metronidazole — INR ↑</option><option value="tmpSmx">TMP-SMX — INR ↑</option><option value="fluconazole">Fluconazole — INR ↑</option><option value="rifampin">Rifampin — INR ↓</option><option value="phenytoin">Phenytoin — variable</option><option value="other">ยาอื่น/ผลไม่แน่ชัด</option></select></label>
+          <label>การเปลี่ยนแปลง<select id="interactionChange"><option value="none">ไม่มี</option><option value="started">เริ่มยา</option><option value="increased">เพิ่มขนาด</option><option value="stopped">หยุดยา</option></select></label>
+          <div id="interactionAlert" class="alert info">ระบบนี้เป็นรายการคัดกรอง ไม่ใช่ interaction database ที่ครอบคลุม</div>
+          <h3>Pharmacogenomics <span class="badge neutral">Advisory only</span></h3>
+          <div class="form-grid two"><label>CYP2C9<select id="cyp2c9"><option>unknown</option><option>*1/*1</option><option>*1/*2</option><option>*1/*3</option><option>*2/*2</option><option>*2/*3</option><option>*3/*3</option></select></label><label>VKORC1<select id="vkorc1"><option>unknown</option><option>GG</option><option>GA</option><option>AA</option></select></label></div>
+          <div id="genotypeResult" class="alert info">ไม่ใช้ผลนี้แทน maintenance-dose titration จาก INR</div>
+        </article>
+        <article class="card full-span"><h3>Safety gate result</h3><div id="safetyResult" class="alert info">กรอกข้อมูลเพื่อประเมิน</div></article>
+      </div>
+    </section>
+
+    <section class="wizard-panel" data-panel="4">
+      <div class="section-head"><div><span class="kicker">STEP 4</span><h2>Dose recommendation และตารางยา</h2></div><span id="calculationBadge" class="badge neutral">ยังไม่คำนวณ</span></div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Current therapy</h3>
+          <div class="form-grid two"><label class="required">Current weekly dose (mg/week)<input id="weeklyDose" type="number" min="0.5" max="140" step="0.5"></label><label>วันตั้งแต่ปรับยาครั้งล่าสุด<input id="daysSinceChange" type="number" min="0" max="365"></label></div>
+          <label class="check"><input id="stablePatient" type="checkbox"><span>ขนาดยาคงที่และสองค่า INR ก่อนหน้าอยู่ในเป้าหมาย</span></label>
+          <h4>Tablet strengths</h4><div class="strength-grid"><label class="check"><input class="strength" value="1" type="checkbox" checked><span>1 mg</span></label><label class="check"><input class="strength" value="2" type="checkbox" checked><span>2 mg</span></label><label class="check"><input class="strength" value="3" type="checkbox" checked><span>3 mg</span></label><label class="check"><input class="strength" value="5" type="checkbox" checked><span>5 mg</span></label></div>
+          <div class="form-grid two"><label class="check"><input id="halfTabs" type="checkbox" checked><span>แบ่งครึ่งเม็ดได้</span></label><label class="check"><input id="quarterTabs" type="checkbox"><span>แบ่ง ¼ เม็ดได้ตามผลิตภัณฑ์/นโยบาย</span></label></div>
+          <label>วันที่เริ่มตาราง<input id="regimenStartDate" type="date"></label>
+          <label>วันเริ่มตาราง<select id="startDay" disabled><option value="0">จันทร์</option><option value="1">อังคาร</option><option value="2">พุธ</option><option value="3">พฤหัสบดี</option><option value="4">ศุกร์</option><option value="5">เสาร์</option><option value="6">อาทิตย์</option></select><small>กำหนดอัตโนมัติจากวันที่เริ่มตาราง</small></label>
+          <div class="form-grid two">
+            <label>จำนวนวันจ่ายยา<input id="daysSupply" type="number" min="1" max="365" step="1" value="28"></label>
+            <label>ยาสำรอง (วัน)<input id="bufferDays" type="number" min="0" max="30" step="1" value="0"></label>
+          </div>
+          <label>รูปแบบการจ่าย<select id="dispenseMode"><option value="bulk">รวมจำนวนเม็ด</option><option value="split">แยกซองรายวัน</option></select></label>
+          <div class="subcard"><strong>ยาที่ผู้ป่วยมีเหลือ</strong><div class="form-grid columns-4 inventory-grid"><label>1 mg<input class="on-hand" data-strength="1" type="number" min="0" step="1" value="0"></label><label>2 mg<input class="on-hand" data-strength="2" type="number" min="0" step="1" value="0"></label><label>3 mg<input class="on-hand" data-strength="3" type="number" min="0" step="1" value="0"></label><label>5 mg<input class="on-hand" data-strength="5" type="number" min="0" step="1" value="0"></label></div><small>ระบบหักจากจำนวนที่ต้องใช้และปัดจำนวนจ่ายขึ้นเป็นเม็ดเต็ม</small></div>
+          <label class="check protocol"><input id="protocolApproved" type="checkbox"><span>ยืนยันว่า local anticoagulation protocol อนุมัติ nomogram นี้และผู้ใช้มีอำนาจเสนอ/ปรับยา</span></label>
+          <button id="calculateBtn" class="btn primary wide" type="button">ประเมินและคำนวณ</button>
+          <div id="calculateError" class="field-error"></div>
+        </article>
+        <article class="card result-card">
+          <div id="decisionResult" class="empty-state">ผลจะปรากฏหลังคำนวณ</div>
+          <div id="doseMetrics" class="metric-grid hidden"><div class="metric"><span>Target INR</span><strong id="metricTarget">—</strong></div><div class="metric"><span>Adjustment</span><strong id="metricAdjustment">—</strong></div><div class="metric"><span>Weekly dose</span><strong id="metricDose">—</strong></div><div class="metric"><span>Recheck</span><strong id="metricRecheck">—</strong></div></div>
+          <div id="regimenWrap" class="hidden">
+            <div class="result-head-inline"><h3>ทางเลือกตารางยา</h3><button id="calendarIcsBtn" type="button" class="btn secondary no-print">เพิ่มลงปฏิทิน (.ics)</button></div>
+            <div id="candidateCards" class="candidate-grid" aria-label="ทางเลือกตารางยา"></div>
+            <div id="candidateDetail" class="alert info"></div>
+            <h3>ตารางรับประทาน 7 วัน</h3>
+            <div id="regimenCalendar" class="med-calendar" aria-label="ปฏิทินรับประทานยา 7 วัน"></div>
+            <div class="table-wrap"><table><thead><tr><th>วัน</th><th>ขนาดยา</th><th>ภาพเม็ดยา</th><th>วิธีจัดเม็ด</th></tr></thead><tbody id="regimenBody"></tbody><tfoot><tr><th>รวม</th><th id="regimenTotal"></th><th colspan="2"></th></tr></tfoot></table></div>
+            <h3>จำนวนยาที่ต้องจ่าย</h3>
+            <div class="table-wrap"><table><thead><tr><th>ความแรง</th><th>ต้องใช้</th><th>ยาคงเหลือ</th><th>จำนวนจ่าย</th><th>หมายเหตุ</th></tr></thead><tbody id="dispenseBody"></tbody></table></div>
+            <div id="dispenseHint" class="fine-print"></div>
+            <h3>ปฏิทินตลอดช่วงจ่ายยา</h3>
+            <div id="supplyCalendar" class="supply-calendar" aria-label="ปฏิทินยาตลอดช่วงจ่าย"></div>
+            <div id="splitScheduleWrap" class="hidden"><h3>รายการแยกซองรายวัน</h3><div class="table-wrap"><table><thead><tr><th>ลำดับ</th><th>วันที่</th><th>วัน</th><th>ขนาดยา</th><th>วิธีจัดเม็ด</th></tr></thead><tbody id="splitScheduleBody"></tbody></table></div></div>
+          </div>
+        </article>
+      </div>
+      <section class="card export-panel"><div><h3>Export และ audit</h3><p>พิมพ์เป็น PDF ผ่าน browser หรือส่งออก audit log เป็น CSV</p></div><div class="button-row no-print"><button id="printBtn" type="button" class="btn secondary">พิมพ์ / Save PDF</button><button id="educationBtn" type="button" class="btn secondary">Patient education</button><button id="auditCsvBtn" type="button" class="btn secondary">Audit CSV</button></div></section>
+    </section>
+
+    <div class="wizard-actions no-print"><button id="backBtn" type="button" class="btn secondary">← ย้อนกลับ</button><div class="grow"></div><button id="nextBtn" type="button" class="btn primary">ถัดไป →</button></div>
+  </form>
+</main>
+
+<footer class="app-footer"><div class="shell">Generated by Warfarin CDSS v2.2 · Guideline configuration 2026.08 · Final decisions rest with the treating clinician.</div></footer>
+
+<script src="js/uuid.js"></script><script src="js/hash.js"></script><script src="js/guidelines/guidelines-db.js"></script><script src="js/store.js"></script>
+<script src="js/engine/risk-calculator.js"></script><script src="js/engine/ttr-calculator.js"></script><script src="js/engine/doac-checker.js"></script><script src="js/engine/safety-gate.js"></script><script src="js/engine/genotype-dose.js"></script><script src="js/engine/nomogram.js"></script><script src="js/engine/dose-scheduler.js"></script><script src="js/engine/regimen-planner.js"></script>
+<script src="js/components/svg-chart.js"></script><script src="js/components/pdf-exporter.js"></script><script src="js/app.js"></script>
+</body></html>

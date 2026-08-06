@@ -1,0 +1,1 @@
+window.CDSS=window.CDSS||{};CDSS.genotypeDose=(age,weight,cyp,vkor)=>{if(!Number.isFinite(age)||!Number.isFinite(weight))return null;let d=3.2-.03*age+.02*weight;const cm={'*1/*3':.75,'*2/*2':.75,'*2/*3':.65,'*3/*3':.5};const vm={GA:.85,AA:.65};d*=cm[cyp]||1;d*=vm[vkor]||1;return Math.max(0,Math.round(d*10)/10)};

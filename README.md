@@ -53,3 +53,11 @@ Clinical governance approval, source verification, validation against institutio
 - `.ics` export now follows the selected regimen for the requested days supply.
 
 The regimen planner optimizes presentation of an already-authorized weekly dose. It does not create booster doses, bridging regimens, reversal doses, or override clinical safety gates.
+
+## Clinical theme refinement
+
+- Clinical-neutral surfaces with restrained semantic color use.
+- Clearer active/completed wizard states and stronger keyboard focus.
+- Candidate selection, alerts, metrics, tables, calendars, and export areas have improved visual hierarchy.
+- Optional CSS state classes are included for `current`, `stale`, `blocked`, and `confirmed` output states.
+- Print output remains legible without relying on color.

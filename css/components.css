@@ -4,3 +4,76 @@
 
 /* v2.2 regimen alternatives, pill visualization, dispensing and supply calendar */
 .candidate-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.candidate-card{border:1px solid var(--border);border-radius:14px;background:#fff;padding:12px;text-align:left;cursor:pointer}.candidate-card.selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(23,92,211,.12);background:#f5f9ff}.candidate-card h4{margin:0 0 6px}.candidate-meta{font-size:.8rem;color:var(--muted);line-height:1.45}.complexity-pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.72rem;font-weight:800;margin-top:7px}.complexity-low{background:#dcfae6;color:#067647}.complexity-moderate{background:#fef0c7;color:#93370d}.complexity-high{background:#fee4e2;color:#b42318}.pill-visual{display:flex;gap:5px;flex-wrap:wrap;align-items:center;justify-content:center;min-height:26px}.pill-shape{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:inline-block;position:relative;background:currentColor}.pill-shape.half::after{content:"";position:absolute;left:50%;top:-2px;right:-2px;bottom:-2px;background:#fff;border-radius:0 999px 999px 0}.pill-shape.quarter::after{content:"";position:absolute;left:50%;top:-2px;right:-2px;bottom:-2px;background:#fff;border-radius:0 999px 999px 0}.pill-shape.quarter::before{content:"";position:absolute;left:-2px;top:50%;right:50%;bottom:-2px;background:#fff;border-radius:0 0 0 999px;z-index:1}.pill-shape.three-quarter::after{content:"";position:absolute;left:50%;top:-2px;right:-2px;bottom:50%;background:#fff;border-radius:0 999px 0 0}.pill-s1{color:#667085}.pill-s2{color:#175cd3}.pill-s3{color:#7f56d9}.pill-s5{color:#d92d20}.supply-calendar{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));gap:8px;margin:12px 0;max-height:650px;overflow:auto}.supply-day{border:1px solid var(--border);border-radius:12px;padding:9px;background:#fff;min-height:125px}.supply-day.today{border-color:var(--primary);box-shadow:0 0 0 2px rgba(23,92,211,.12)}.supply-date{font-size:.76rem;color:var(--muted);font-weight:750}.supply-dose{font-size:1rem;font-weight:850;color:var(--primary);margin:4px 0}.supply-tablets{font-size:.72rem;color:var(--muted)}.inventory-grid{margin-top:8px}.inventory-grid input{min-width:0}@media(max-width:900px){.candidate-grid{grid-template-columns:1fr}.supply-calendar{grid-template-columns:repeat(2,minmax(130px,1fr))}}@media(max-width:480px){.supply-calendar{grid-template-columns:1fr}}@media print{.candidate-grid{grid-template-columns:repeat(3,1fr)}.candidate-card:not(.selected){display:none}.supply-calendar{grid-template-columns:repeat(7,1fr);max-height:none;overflow:visible}.supply-day{min-height:90px;padding:6px}.pill-shape{width:16px;height:16px}}
+
+/* Clinical theme refinement aligned with Design(1).md */
+.app-header{
+  background:linear-gradient(125deg,#102a56 0%,#164c9b 58%,#175cd3 100%);
+  border-bottom:1px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 34px rgba(16,42,86,.20);
+}
+.app-header h1{letter-spacing:-.025em}
+.privacy-chip{backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.card{border-color:#dfe5ed;box-shadow:var(--shadow);transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+.card:hover{border-color:#cbd5e1}
+.toolbar{background:rgba(255,255,255,.92);backdrop-filter:blur(8px)}
+label{color:var(--text-strong)}
+input,select{
+  min-height:44px;
+  border-color:#b8c3d5;
+  box-shadow:inset 0 1px 2px rgba(16,24,40,.03);
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+input:hover,select:hover{border-color:#98a2b3}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(23,92,211,.10)}
+input:disabled,select:disabled{background:#f2f4f7;color:#667085;cursor:not-allowed}
+.btn{min-height:42px;box-shadow:var(--shadow-sm)}
+.btn.primary{box-shadow:0 6px 16px rgba(23,92,211,.18)}
+.btn.secondary{background:#eef3f9;border:1px solid #d6deea}
+.btn.ghost{background:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.alert{position:relative;border-left-width:4px}
+.alert.info{background:var(--primary-soft)}
+.alert.warning{background:var(--warning-soft)}
+.alert.danger{background:var(--danger-soft)}
+.alert.success{background:var(--positive-soft)}
+.alert.accent{background:var(--accent-soft)}
+.sticky-disclaimer{top:10px;border-left-width:5px;background:rgba(255,250,235,.96);backdrop-filter:blur(8px)}
+.section-head{padding-bottom:12px;border-bottom:1px solid #e4e7ec}
+.section-head h2{font-size:clamp(1.2rem,2vw,1.55rem);letter-spacing:-.015em}
+.kicker{display:inline-flex;align-items:center;gap:6px}
+.kicker:before{content:"";width:18px;height:3px;border-radius:999px;background:var(--primary)}
+.badge{gap:6px;border:1px solid transparent}
+.badge:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.badge.neutral{border-color:#e4e7ec}
+.badge.success{border-color:#abefc6}
+.badge.warning{border-color:#fedf89}
+.badge.danger{border-color:#fecdca}
+.score-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.metric{background:linear-gradient(180deg,#fff,#f8fafc);box-shadow:var(--shadow-sm)}
+.table-wrap{border:1px solid var(--border);border-radius:14px;background:#fff}
+table{border-collapse:separate;border-spacing:0}
+th{position:sticky;top:0;z-index:1;background:#eef2f7;color:#344054;letter-spacing:.015em}
+th:first-child{border-top-left-radius:12px}th:last-child{border-top-right-radius:12px}
+tbody tr:hover td{background:#f8fbff}
+.empty-state{background:linear-gradient(180deg,#fff,#f8fafc)}
+.protocol{background:#fffdf3;border-style:solid;border-left:4px solid #d6b656}
+.candidate-card{position:relative;box-shadow:var(--shadow-sm);transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.candidate-card:hover{transform:translateY(-2px);border-color:#84adff;box-shadow:0 10px 22px rgba(16,24,40,.08)}
+.candidate-card.selected{border-width:2px;background:linear-gradient(180deg,#f7fbff,#eef6ff)}
+.candidate-card.selected:after{content:"เลือกแล้ว";position:absolute;top:10px;right:10px;padding:3px 8px;border-radius:999px;background:var(--primary);color:#fff;font-size:.7rem;font-weight:800}
+.med-day,.supply-day{box-shadow:var(--shadow-sm)}
+.med-day-head{background:#eef2f7}
+.med-dose,.supply-dose{letter-spacing:-.01em}
+.export-panel{padding:16px;border:1px solid #d8e2f0;border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef4ff)}
+/* Optional output state classes. JS can apply these without changing layout. */
+.output-state{border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:700}
+.output-state.current{background:var(--positive-soft);border-color:#abefc6;color:#05603a}
+.output-state.stale{background:var(--warning-soft);border-color:#fedf89;color:#7a2e0e}
+.output-state.blocked{background:var(--danger-soft);border-color:#fecdca;color:#912018}
+.output-state.confirmed{background:var(--primary-soft);border-color:#b2ddff;color:#1849a9}
+.is-stale{filter:saturate(.55);opacity:.72;pointer-events:none}
+@media(max-width:780px){
+  .toolbar{align-items:stretch}
+  .toolbar label{min-width:100%}
+  .button-row .btn{flex:1 1 150px}
+}

@@ -13,3 +13,9 @@
 .wizard-actions .btn{min-width:124px}
 @keyframes panel-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:650px){.stepper{gap:7px}.step{display:flex;justify-content:center;padding:8px;border-radius:9px}.step span{width:32px;height:32px}.step b,.step small{display:none}.step.active:after{left:8px;right:8px}.wizard-actions{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}}
+
+
+/* v2.3 workflow-state navigation */
+.stepper{gap:6px;background:#edf2f6;padding:6px;border-radius:12px;position:sticky;top:86px;z-index:11}
+.step{border:0;border-radius:8px;background:transparent;padding:9px 10px}.step span{border-radius:8px;background:#fff;border:1px solid #cfd9e3}.step.active{background:#fff;box-shadow:0 2px 7px rgba(0,45,98,.08)}.step.active span{background:#003366}.step.complete{background:#edfafa}.step.complete span{background:#008080}.step.complete span:after{content:"✓";font-size:.72rem;margin-left:2px}.step.complete b{color:#006d75}
+@media(max-width:650px){.stepper{top:6px}.step{min-height:44px}.step span{width:32px;height:32px}}

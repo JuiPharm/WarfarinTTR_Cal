@@ -66,3 +66,14 @@ The regimen planner optimizes presentation of an already-authorized weekly dose.
 - Presentation updated to Bangkok Hospital blue/medical teal, official logo placement, accessible 44px controls, softer cards and mobile-responsive branding.
 - Clinical calculations, data schema, safety gates, regimen planner, dispensing calculator, calendar, persistence and exports are unchanged.
 - The logo is loaded from the official remote asset URL supplied in `Design(2).md`; clinical data remains client-side and is not transmitted by the application.
+
+
+## v2.3 Clinical Workspace UI
+- Compact professional header
+- Sticky patient context bar
+- Stronger clinical-result hierarchy
+- Workflow-state stepper styling
+- Explicit selected regimen state
+- Expandable long-period medication calendar
+- Calculation engines retained; presentation-layer update only
+- Reusable `Design.md` included

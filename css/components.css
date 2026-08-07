@@ -151,3 +151,22 @@ tbody tr:hover td{background:#f0f8fa}
   .footer-grid{align-items:flex-start}.footer-logo{height:36px}
 }
 @media print{.app-footer{background:#fff!important;color:#000!important;border-top:1px solid #000}.footer-logo{height:34px}}
+
+
+/* v2.3 Clinical Workspace refinements — presentation only */
+.app-header{padding:12px 0 14px;background:#fff;color:var(--text);border-bottom:1px solid #d8e1ea;box-shadow:0 2px 10px rgba(0,45,98,.06)}
+.header-grid{min-height:66px}.brand-logo img{height:42px}.brand-copy h1{font-size:1.45rem;color:#003366;margin:0}.brand-copy p{font-size:.9rem;color:#667085}.eyebrow{color:#008b98;font-size:.68rem}.version{background:#e8f7f8;color:#006d75;font-size:.52em}.privacy-chip{background:#f4f6f9;color:#475467;border-color:#d8e1ea;font-size:.78rem;padding:7px 10px}
+.sticky-disclaimer{position:static;border-left:4px solid #d6a400;background:#fffdf3;color:#6f5900;box-shadow:none}
+.toolbar{box-shadow:none;border-radius:10px;background:#fff;padding:14px 16px}
+.patient-context{position:sticky;top:8px;z-index:12;display:grid;grid-template-columns:1.5fr repeat(5,minmax(105px,1fr));gap:1px;margin:14px 0 16px;background:#d8e1ea;border:1px solid #d8e1ea;border-radius:10px;overflow:hidden;box-shadow:0 4px 16px rgba(0,45,98,.09)}
+.context-item{background:#fff;padding:9px 12px;min-width:0}.context-item span{display:block;color:#667085;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em}.context-item strong{display:block;color:#23364a;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.context-patient{border-left:4px solid #00a8b5}
+.section-head{border-bottom:1px solid #e5eaf0;padding-bottom:10px}.section-head h2{font-size:1.45rem;color:#23364a}
+.card{border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.045)}.card:hover{transform:none;box-shadow:0 5px 15px rgba(0,45,98,.07)}
+.clinical-result-card{border-top:4px solid #00a8b5}.result-label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#008b98;margin:12px 0 7px}
+.hero-metrics{grid-template-columns:1fr 1.2fr 1.3fr 1fr}.hero-metrics .metric{background:#fff;border-top:3px solid #d8e1ea}.hero-metrics .metric:nth-child(2){border-top-color:#00a8b5}.hero-metrics .metric:nth-child(3){border-top-color:#003366}.hero-metrics strong{font-size:1.25rem;color:#003366}
+.candidate-card{position:relative;min-height:148px}.candidate-card.selected:after{content:"เลือกแล้ว";position:absolute;right:10px;top:10px;background:#003366;color:#fff;padding:3px 7px;border-radius:999px;font-size:.68rem;font-weight:800}.candidate-card h4{padding-right:58px}.candidate-card:focus-visible{outline:3px solid rgba(0,168,181,.28)}
+.calendar-details{margin-top:16px;border:1px solid #d8e1ea;border-radius:10px;background:#fff}.calendar-details summary{cursor:pointer;padding:13px 15px;font-weight:750;color:#003366;background:#f4f6f9;border-radius:10px;list-style:none}.calendar-details summary::-webkit-details-marker{display:none}.calendar-details summary:after{content:"＋";float:right;color:#008b98}.calendar-details[open] summary:after{content:"−"}.calendar-details .supply-calendar{padding:10px}
+.export-panel{border-left:4px solid #003366}.app-footer{background:#fff;border-top:1px solid #d8e1ea}
+@media(max-width:1000px){.patient-context{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.app-header{padding:9px 0}.brand-logo img{height:36px}.brand-copy p,.privacy-chip{display:none}.patient-context{position:static;grid-template-columns:repeat(2,1fr)}.context-item strong{font-size:.88rem}.hero-metrics{grid-template-columns:1fr 1fr}.sticky-disclaimer{font-size:.86rem}}
+@media print{.patient-context{position:static;grid-template-columns:repeat(6,1fr);box-shadow:none}.calendar-details{border:0}.calendar-details summary{display:none}.calendar-details:not([open])>.supply-calendar{display:grid!important}}

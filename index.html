@@ -11,12 +11,6 @@
   <link rel="stylesheet" href="css/charts.css">
 </head>
 <body>
-<div class="hospital-topbar no-print">
-  <div class="shell topbar-grid">
-    <span>Bangkok Hospital Group · Clinical Support System</span>
-    <span class="topbar-contact">Call Center <strong>1719</strong></span>
-  </div>
-</div>
 <header class="app-header">
   <div class="shell header-grid">
     <div class="brand-lockup">
@@ -24,12 +18,12 @@
         <img src="https://lh5.googleusercontent.com/d/1r7PM1ogHIbxskvcauVIYaQOfSHXWGncO" alt="Bangkok Hospital Logo" referrerpolicy="no-referrer">
       </a>
       <div class="brand-copy">
-        <div class="eyebrow">Clinical Decision Support · Maintenance phase</div>
+        <div class="eyebrow">Bangkok Hospital · Clinical Workspace</div>
         <h1>Warfarin CDSS <span class="version">v2.2</span></h1>
-        <p>Risk stratification, INR history, safety screening และการจัดตารางยาในหน้าเดียว</p>
+        <p>Warfarin maintenance decision support</p>
       </div>
     </div>
-    <div class="privacy-chip" aria-label="Data privacy">🔒 ไม่มีการส่งข้อมูลทางคลินิกออกจากเบราว์เซอร์</div>
+    <div class="privacy-chip" aria-label="Data privacy">Local data only · Clinical verification required</div>
   </div>
 </header>
 
@@ -49,11 +43,20 @@
     <button id="clearDataBtn" class="btn ghost danger-text" type="button">ล้างข้อมูลทั้งหมด</button>
   </section>
 
+  <section class="patient-context no-print" aria-label="บริบทผู้ป่วยปัจจุบัน">
+    <div class="context-item context-patient"><span>ผู้ป่วย</span><strong id="ctxPatient">—</strong></div>
+    <div class="context-item"><span>ข้อบ่งใช้</span><strong id="ctxIndication">—</strong></div>
+    <div class="context-item"><span>Target INR</span><strong id="ctxTarget">—</strong></div>
+    <div class="context-item"><span>Latest INR</span><strong id="ctxLatestInr">—</strong></div>
+    <div class="context-item"><span>TTR</span><strong id="ctxTtr">—</strong></div>
+    <div class="context-item"><span>Current dose</span><strong id="ctxDose">—</strong></div>
+  </section>
+
   <nav class="stepper no-print" aria-label="ขั้นตอนการประเมิน">
-    <button class="step active" data-step="1"><span>1</span><b>Risk</b><small>ความเสี่ยง</small></button>
-    <button class="step" data-step="2"><span>2</span><b>INR</b><small>ประวัติและ TTR</small></button>
-    <button class="step" data-step="3"><span>3</span><b>Safety</b><small>Hard stops</small></button>
-    <button class="step" data-step="4"><span>4</span><b>Dose</b><small>ผลและตารางยา</small></button>
+    <button class="step active" data-step="1"><span>1</span><b>Clinical inputs</b><small>ข้อมูลและความเสี่ยง</small></button>
+    <button class="step" data-step="2"><span>2</span><b>INR review</b><small>ประวัติและ TTR</small></button>
+    <button class="step" data-step="3"><span>3</span><b>Safety gate</b><small>ข้อห้ามและปัจจัยเสี่ยง</small></button>
+    <button class="step" data-step="4"><span>4</span><b>Plan & dispense</b><small>ผล ตารางยา และจำนวนจ่าย</small></button>
   </nav>
 
   <form id="appForm" novalidate>
@@ -188,9 +191,9 @@
           <button id="calculateBtn" class="btn primary wide" type="button">ประเมินและคำนวณ</button>
           <div id="calculateError" class="field-error"></div>
         </article>
-        <article class="card result-card">
+        <article class="card result-card clinical-result-card">
           <div id="decisionResult" class="empty-state">ผลจะปรากฏหลังคำนวณ</div>
-          <div id="doseMetrics" class="metric-grid hidden"><div class="metric"><span>Target INR</span><strong id="metricTarget">—</strong></div><div class="metric"><span>Adjustment</span><strong id="metricAdjustment">—</strong></div><div class="metric"><span>Weekly dose</span><strong id="metricDose">—</strong></div><div class="metric"><span>Recheck</span><strong id="metricRecheck">—</strong></div></div>
+          <div class="result-label">Clinical recommendation</div><div id="doseMetrics" class="metric-grid hero-metrics hidden"><div class="metric"><span>Target INR</span><strong id="metricTarget">—</strong></div><div class="metric"><span>Adjustment</span><strong id="metricAdjustment">—</strong></div><div class="metric"><span>Weekly dose</span><strong id="metricDose">—</strong></div><div class="metric"><span>Recheck</span><strong id="metricRecheck">—</strong></div></div>
           <div id="regimenWrap" class="hidden">
             <div class="result-head-inline"><h3>ทางเลือกตารางยา</h3><button id="calendarIcsBtn" type="button" class="btn secondary no-print">เพิ่มลงปฏิทิน (.ics)</button></div>
             <div id="candidateCards" class="candidate-grid" aria-label="ทางเลือกตารางยา"></div>
@@ -201,8 +204,10 @@
             <h3>จำนวนยาที่ต้องจ่าย</h3>
             <div class="table-wrap"><table><thead><tr><th>ความแรง</th><th>ต้องใช้</th><th>ยาคงเหลือ</th><th>จำนวนจ่าย</th><th>หมายเหตุ</th></tr></thead><tbody id="dispenseBody"></tbody></table></div>
             <div id="dispenseHint" class="fine-print"></div>
-            <h3>ปฏิทินตลอดช่วงจ่ายยา</h3>
-            <div id="supplyCalendar" class="supply-calendar" aria-label="ปฏิทินยาตลอดช่วงจ่าย"></div>
+            <details class="calendar-details">
+              <summary>ดูปฏิทินตลอดช่วงจ่ายยา</summary>
+              <div id="supplyCalendar" class="supply-calendar" aria-label="ปฏิทินยาตลอดช่วงจ่าย"></div>
+            </details>
             <div id="splitScheduleWrap" class="hidden"><h3>รายการแยกซองรายวัน</h3><div class="table-wrap"><table><thead><tr><th>ลำดับ</th><th>วันที่</th><th>วัน</th><th>ขนาดยา</th><th>วิธีจัดเม็ด</th></tr></thead><tbody id="splitScheduleBody"></tbody></table></div></div>
           </div>
         </article>
@@ -217,7 +222,7 @@
 <footer class="app-footer">
   <div class="shell footer-grid">
     <img class="footer-logo" src="https://lh5.googleusercontent.com/d/1r7PM1ogHIbxskvcauVIYaQOfSHXWGncO" alt="Bangkok Hospital Logo" referrerpolicy="no-referrer">
-    <div>Generated by Warfarin CDSS v2.2 · Guideline configuration 2026.08<br><span>Final decisions rest with the treating clinician.</span></div>
+    <div>Generated by Warfarin CDSS v2.3 UI · Guideline configuration 2026.08<br><span>Final decisions rest with the treating clinician.</span></div>
   </div>
 </footer>
 

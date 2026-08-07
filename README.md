@@ -61,3 +61,8 @@ The regimen planner optimizes presentation of an already-authorized weekly dose.
 - Candidate selection, alerts, metrics, tables, calendars, and export areas have improved visual hierarchy.
 - Optional CSS state classes are included for `current`, `stale`, `blocked`, and `confirmed` output states.
 - Print output remains legible without relying on color.
+
+## Bangkok Hospital Group visual theme
+- Presentation updated to Bangkok Hospital blue/medical teal, official logo placement, accessible 44px controls, softer cards and mobile-responsive branding.
+- Clinical calculations, data schema, safety gates, regimen planner, dispensing calculator, calendar, persistence and exports are unchanged.
+- The logo is loaded from the official remote asset URL supplied in `Design(2).md`; clinical data remains client-side and is not transmitted by the application.

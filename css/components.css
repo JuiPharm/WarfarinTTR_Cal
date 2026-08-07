@@ -77,3 +77,77 @@ tbody tr:hover td{background:#f8fbff}
   .toolbar label{min-width:100%}
   .button-row .btn{flex:1 1 150px}
 }
+
+/* Bangkok Hospital Group theme — presentation only, no clinical logic changes */
+.hospital-topbar{background:var(--primary-dark);color:#fff;font-size:.82rem}
+.topbar-grid{min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topbar-contact{color:#d7f5f7}.topbar-contact strong{color:#fff;font-size:.95rem}
+.app-header{
+  background:#fff;
+  color:var(--text-strong);
+  padding:22px 0 24px;
+  border-bottom:4px solid var(--teal);
+  box-shadow:0 5px 18px rgba(0,45,98,.08);
+}
+.header-grid{display:flex;justify-content:space-between;align-items:center;gap:28px}
+.brand-lockup{display:flex;align-items:center;gap:20px;min-width:0}
+.brand-logo{display:flex;align-items:center;justify-content:center;min-width:150px;padding-right:20px;border-right:1px solid var(--border)}
+.brand-logo img{display:block;height:54px;width:auto;max-width:180px;object-fit:contain}
+.brand-copy{min-width:0}.brand-copy h1{margin:1px 0 3px;font-size:clamp(2rem,3.5vw,2.7rem);line-height:1.15;color:var(--primary);letter-spacing:-.025em}
+.app-header p{margin:0;color:var(--muted)}
+.eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-dark);font-weight:800}
+.version{font-size:.42em;vertical-align:top;background:var(--teal-soft);color:var(--teal-dark);padding:4px 8px;border-radius:999px;border:1px solid #b8e8ec}
+.privacy-chip{background:var(--primary-soft);color:var(--primary);padding:10px 13px;border:1px solid #c8d8e6;border-radius:999px;font-size:.84rem;font-weight:700;max-width:265px}
+.card{border-radius:var(--radius);border-color:var(--border);box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:#b8c9d6}
+.toolbar{border-top:3px solid var(--teal);background:#fff}
+label{color:var(--text-strong)}
+input,select{min-height:44px;border-radius:8px;border-color:#b8c5d0;background:#fff}
+input:hover,select:hover{border-color:#7f96a8}
+input:focus,select:focus{border-color:var(--teal-dark);box-shadow:0 0 0 4px rgba(0,168,181,.12)}
+.btn{min-height:44px;border-radius:8px;font-weight:750;box-shadow:none}
+.btn.primary{background:var(--primary);color:#fff;border:1px solid var(--primary)}
+.btn.primary:hover{background:var(--primary-dark)}
+.btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+.btn.secondary:hover{background:var(--primary-soft)}
+.btn.ghost{background:#fff;border:1px solid var(--border-strong)}
+.wide.btn.primary{background:linear-gradient(135deg,var(--primary),#004b82)}
+.alert{border-radius:10px;border-left-width:4px}
+.alert.info{background:#eef6fa;border-color:#8cc6dc;color:#164b66}
+.alert.warning{background:var(--warning-soft);border-color:#e5bc63;color:#765000}
+.alert.danger{background:var(--danger-soft);border-color:#efa29b;color:#962c24}
+.alert.success{background:var(--positive-soft);border-color:#81ccb9;color:#086552}
+.alert.accent{background:var(--teal-soft);border-color:#84d7dc;color:#00626a}
+.sticky-disclaimer{border-left:5px solid var(--warning);background:rgba(255,248,231,.97)}
+.section-head{padding-bottom:14px;border-bottom:1px solid var(--border)}
+.section-head h2{font-size:clamp(1.55rem,2.6vw,1.95rem);color:var(--primary);font-weight:650}
+.card h3{font-size:clamp(1.15rem,2vw,1.35rem);color:var(--text-strong)}
+.kicker{color:var(--teal-dark)}.kicker:before{background:var(--teal)}
+.badge.success{background:var(--positive-soft);color:var(--positive)}
+.badge.warning{background:var(--warning-soft);color:#815500}
+.badge.danger{background:var(--danger-soft);color:var(--danger-strong)}
+.score-card{background:linear-gradient(145deg,#fff,var(--teal-soft));border-color:#b9e2e5}
+.score-card strong{color:var(--primary)}
+.metric{border-top:3px solid var(--teal);border-radius:10px}
+th{background:var(--primary);color:#fff;position:sticky;top:0;z-index:1}
+tbody tr:hover td{background:#f0f8fa}
+.protocol{border-left:4px solid var(--teal);background:#f2fbfb}
+.candidate-card{border-radius:10px}.candidate-card:hover{border-color:var(--teal);box-shadow:var(--shadow-hover)}
+.candidate-card.selected{border-color:var(--teal-dark);background:linear-gradient(180deg,#fff,var(--teal-soft));box-shadow:0 0 0 3px rgba(0,168,181,.13)}
+.candidate-card.selected:after{background:var(--teal-dark)}
+.med-day.today,.supply-day.today{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,168,181,.15)}
+.med-dose,.supply-dose{color:var(--primary)}
+.export-panel{border-left:4px solid var(--teal);background:linear-gradient(135deg,#fff,var(--teal-soft))}
+.app-footer{background:var(--primary-dark);color:#e5eef5;margin-top:30px;padding:24px 0}
+.footer-grid{display:flex;align-items:center;gap:18px}.footer-logo{height:42px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px}.app-footer span{color:#b9cedc}
+@media(max-width:840px){
+  .header-grid{align-items:flex-start;flex-direction:column}.brand-lockup{width:100%}.privacy-chip{max-width:none}
+  .brand-logo{min-width:125px}.brand-logo img{height:42px;max-width:140px}
+}
+@media(max-width:560px){
+  .topbar-grid{min-height:38px}.topbar-grid>span:first-child{display:none}
+  .brand-lockup{align-items:flex-start;gap:12px}.brand-logo{min-width:auto;padding-right:12px}.brand-logo img{height:38px;max-width:105px}
+  .brand-copy h1{font-size:1.65rem}.eyebrow{font-size:.64rem;letter-spacing:.07em}.app-header p{font-size:.88rem}
+  .footer-grid{align-items:flex-start}.footer-logo{height:36px}
+}
+@media print{.app-footer{background:#fff!important;color:#000!important;border-top:1px solid #000}.footer-logo{height:34px}}
